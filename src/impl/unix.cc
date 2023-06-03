@@ -21,6 +21,7 @@
 
 #if defined(__linux__)
 # include <linux/serial.h>
+#include <iostream>
 #endif
 
 #include <sys/select.h>
@@ -582,6 +583,7 @@ Serial::SerialImpl::read (uint8_t *buf, size_t size)
         // Disconnected devices, at least on Linux, show the
         // behavior that they are always ready to read immediately
         // but reading returns nothing.
+
         throw SerialException ("device reports readiness to read but "
                                "returned no data (device disconnected?)");
       }
@@ -662,7 +664,10 @@ Serial::SerialImpl::write (const uint8_t *data, size_t length)
           ::write (fd_, data + bytes_written, length - bytes_written);
         // write should always return some data as select reported it was
         // ready to write when we get to this point.
+        std::cout << "bytes_written_now: " << bytes_written_now << std::endl;
         if (bytes_written_now < 1) {
+          //std::cout << "*********device reports readiness to write but returned no data   " << std::endl;
+
           // Disconnected devices, at least on Linux, show the
           // behavior that they are always ready to write immediately
           // but writing returns nothing.
